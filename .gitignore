@@ -1,6 +1,7 @@
 *.txt
 *.list
 *.zip
+*.gz
 *.csv
 *.xml
 *.swp
