@@ -1,0 +1,19 @@
+#! /usr/bin/env bash
+# Info: http://data.norge.no/data/registerenheten-i-br%C3%B8nn%C3%B8ysund/enhetsregisteret
+# Download: http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
+SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "${SOURCE_DIR}"
+source config.sh
+
+# Timestamping is turned off on the server, so we can't use it for wget
+# Download if missing or --update-source
+wget -N "http://s3.amazonaws.com/alexa-static/top-1m.csv.zip" 2>&1 # | grep "not retrieving" 1>&2
+if [ ! -e "${DOMAINS}" ] || [ "x$1" = "x--update-list" ]; then
+  # We did not find "not retrieving" or we were forced to update the list
+  7z x -y top-1m.csv.zip
+  cat top-1m.csv | "${MCN_TOOLS}/default_extract" > ./tmp.list
+  cat top-1m.csv | sed -e 's/\.com\.no/\.no/' -e 's/\.co\.no/\.no/' | "${MCN_TOOLS}/default_extract" >> ./tmp.list
+  # cat top-1m.csv | sed -e 's/\.[^.]*$/\.no/' | "${MCN_TOOLS}/default_extract" >> ./tmp.list
+  cat ./tmp.list | sort | uniq > "${DOMAINS}"
+  rm -f ./tmp.list
+fi
