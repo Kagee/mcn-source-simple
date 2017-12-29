@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+SCRIPT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+#set -x
+
+cd $SCRIPT_DIR/
+source config.sh # MCN_TOOL, DOMAINS
+
+if [ ! -e "${DOMAINS}" ]; then
+    ./perm.py 2 "${MCN_TOOLS}" | "${MCN_TOOLS}/default_extract" > "${DOMAINS}"
+    ./perm.py 3 "${MCN_TOOLS}" | "${MCN_TOOLS}/default_extract" >> "${DOMAINS}"
+fi
