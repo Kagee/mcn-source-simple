@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-# coding: utf-8
 
 import itertools
 import sys
@@ -11,12 +10,11 @@ if len(sys.argv) < 2:
 sys.path.append(sys.argv[2])
 from build_regexp import *
 
-print(sys.argv[1], sys.argv[2], file=sys.stderr)
+chars = get_non_ascii(prod=False, python=True) 
 
-sys.exit()
-#text="abcdefghijklmnopqrstuvwxyzáàäčçđéèêŋńñóòôöšŧüžæøå0123456789-"
-
-text=u"abcdefghijklmnopqrstuvwxyzæøå0123456789-"
+text = "abcdefghijklmnopqrstuvwxyz{}0123456789-".format(
+        "".join(c[0] for c in chars)
+        )
 
 for perm in itertools.product(list(text), repeat=int(sys.argv[1])):
-    print("".join(perm) + ".no").encode('utf-8')
+    print("".join(perm) + ".no")
