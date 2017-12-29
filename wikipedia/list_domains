@@ -19,7 +19,7 @@ function dw {
     fi
 }
 
-dw "${ENWIKI}"
+#dw "${ENWIKI}"
 dw "${NOWIKI}"
 dw "${NNWIKI}"
 
