@@ -19,10 +19,18 @@ function dw {
     fi
 }
 
-#dw "${ENWIKI}"
+dw "${ENWIKI}"
 dw "${NOWIKI}"
 dw "${NNWIKI}"
 
-#if [ ! -e "$OUT" ] || [ "x$1" = "x--update-list" ]; then
-#  echo "Extracting and grepping $IN into ${OUT}.tmp" 1>&2;
-  #gzip --stdout -d "$IN" | sed -e 's/),(/\n/g' | grep -a -F '.no' | $BASE/scraper/urldecode
+function ed {
+	BN="$(basename "$1")"
+	gzip --stdout -d "${BN}" | sed -e 's/),(/\n/g' | grep -a -F '.no' | "${MCN_TOOLS}/urldecode" 3 > "${BN}.list.tmp"
+}
+
+ed "${ENWIKI}"
+ed "${NOWIKI}"
+ed "${NNWIKI}"
+
+find . -name '*.list.tmp' -exec cat {} \; | sed -e 's/.html.no/.html/g' | "${MCN_TOOLS}/default_extract" > "${DOMAINS}"
+#rm *.list.tmp
