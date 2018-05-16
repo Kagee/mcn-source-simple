@@ -1,8 +1,9 @@
 #! /usr/bin/env bash
-# Info: http://data.norge.no/data/registerenheten-i-br%C3%B8nn%C3%B8ysund/enhetsregisteret
-# Download: http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
+# A crontab that downloads the list of expired and
+# soon-to-be expired domains from domainname.shop
+# once a dag (22:00)
 SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "${SOURCE_DIR}"
+cd "$SOURCE_DIR"
 source config.sh
 
 if [ -d "$PWD/$STORAGE" ];  then
