@@ -8,3 +8,6 @@ Scripts for using / downloading some simple, mostly static sources.
 * etatsbasen: Adresses for government agencies and municipalities.
 * bedriftshelsetjenester: Goverment approved company health services
 * permutate: Permutation over 2 and 3-char domains
+* alexa: Top 1m domains. 
+* domeneshop: Crontab that fetches expired and soon to be expired from domainname.shop every night.
+* wikipedia: External links from en, no and nb Wikipedias
