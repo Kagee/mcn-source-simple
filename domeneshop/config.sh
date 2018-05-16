@@ -1,5 +1,4 @@
-#! /bin/bash
-# MCN_TOOLS have moved to system config file
+#! /usr/bin/env bash
 source "$HOME/.mcn.conf"
 
 URL="https://domene.shop/expired"
