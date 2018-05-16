@@ -1,11 +1,12 @@
 #! /usr/bin/env bash
-SCRIPT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
-#set -x
-
-cd $SCRIPT_DIR/
-source config.sh # MCN_TOOL, DOMAINS
-
-if [ ! -e "${DOMAINS}" ]; then
-    ./perm.py 2 "${MCN_TOOLS}" | "${MCN_TOOLS}/default_extract" > "${DOMAINS}"
-    ./perm.py 3 "${MCN_TOOLS}" | "${MCN_TOOLS}/default_extract" >> "${DOMAINS}"
+SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SOURCE_DIR"
+source config.sh
+set -Eeuo pipefail
+trap "echo '[ERROR] Permutation failed!' 1>&2; rm _tmp.list" ERR
+if [ ! -e "$DOMAINS" ]; then
+    ./perm.py 2 "$MCN_TOOLS" | "$MCN_TOOLS/default_extract" > "_tmp.list"
+    ./perm.py 3 "$MCN_TOOLS" | "$MCN_TOOLS/default_extract" >> "_tmp.list"
 fi
+
+mv "_tmp.list" "$DOMAINS"
