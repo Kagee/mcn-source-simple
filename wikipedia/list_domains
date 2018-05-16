@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
-# Info: 
+# Info: Dumps of all external links in en, no and nn wikipedias 
 # Download: 
 SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "${SOURCE_DIR}"
+cd "$SOURCE_DIR"
 source config.sh
 
 ENWIKI="https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-externallinks.sql.gz"
@@ -12,25 +12,27 @@ NNWIKI="https://dumps.wikimedia.org/nnwiki/latest/nnwiki-latest-externallinks.sq
 function dw {
     BN="$(basename "$1")"
     if [ ! -e "$BN" ]; then
-        echo "Fail to find ${BN}, downloading" 1>&2;
-        wget --timestamping "${1}";
+        echo "[INFO] Fail to find $BN, downloading" 1>&2;
+        wget --timestamping "$1";
     else
-        echo "Found ${BN}" 1>&2;
+        echo "[INFO] Found $BN" 1>&2;
     fi
 }
 
-dw "${ENWIKI}"
-dw "${NOWIKI}"
-dw "${NNWIKI}"
+dw "$ENWIKI"
+dw "$NOWIKI"
+dw "$NNWIKI"
 
 function ed {
 	BN="$(basename "$1")"
-	gzip --stdout -d "${BN}" | sed -e 's/),(/\n/g' | grep -a -F '.no' | "${MCN_TOOLS}/urldecode" 3 > "${BN}.list.tmp"
+	echo >&2 "[INFO] Extracting $BN"
+	gzip --stdout -d "$BN" | sed -e 's/),(/\n/g' | grep -a -F '.no' | "$MCN_TOOLS/urldecode" 3 > "$BN.list.tmp"
 }
 
-ed "${ENWIKI}"
-ed "${NOWIKI}"
-ed "${NNWIKI}"
+ed "$ENWIKI"
+ed "$NOWIKI"
+ed "$NNWIKI"
 
-find . -name '*.list.tmp' -exec cat {} \; | sed -e 's/.html.no/.html/g' | "${MCN_TOOLS}/default_extract" > "${DOMAINS}"
-#rm *.list.tmp
+echo >&2 "[INFO] Extracting domains. This may take a LONG time."
+find . -name '*.list.tmp' -exec cat {} \; | sed -e 's/.html.no/.html/g' | cat - "$DOMAINS" 2>/dev/null | "$MCN_TOOLS/default_extract" > "_tmp.list"
+mv "_tmp.list" "$DOMAINS"
