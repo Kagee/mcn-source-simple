@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+# Info: http://data.norge.no/data/registerenheten-i-br%C3%B8nn%C3%B8ysund/enhetsregisteret
+# Download: http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
+SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "${SOURCE_DIR}"
+source config.sh
+
+if [ -d "$PWD/$STORAGE" ];  then
+  find "$PWD/$STORAGE" -type f -name '*.html' -exec cat {} \; | \
+	cat - "${DOMAINS}" 2>/dev/null | \
+	"${MCN_TOOLS}/default_extract" > ./tmp.list
+  cat ./tmp.list | sort | uniq > "${DOMAINS}"
+  rm -f ./tmp.list
+fi
