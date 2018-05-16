@@ -7,6 +7,5 @@ trap "echo '[ERROR] Permutation failed!' 1>&2; rm _tmp.list" ERR
 if [ ! -e "$DOMAINS" ]; then
     ./perm.py 2 "$MCN_TOOLS" | "$MCN_TOOLS/default_extract" > "_tmp.list"
     ./perm.py 3 "$MCN_TOOLS" | "$MCN_TOOLS/default_extract" >> "_tmp.list"
+    mv "_tmp.list" "$DOMAINS"
 fi
-
-mv "_tmp.list" "$DOMAINS"
