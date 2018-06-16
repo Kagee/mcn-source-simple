@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 # Download: https://domene.shop/expired
 SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "${SOURCE_DIR}"
+cd "${SOURCE_DIR}" || exit
 source config.sh
 DATA="${SOURCE_DIR}/data"
 mkdir -p "$DATA"
