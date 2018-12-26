@@ -13,7 +13,7 @@ function dw {
     BN="$(basename "$1")"
     if [ ! -e "$BN" ]; then
         echo "[INFO] Fail to find $BN, downloading" 1>&2;
-        wget --timestamping "$1";
+        wget -4 --timestamping "$1";
     else
         echo "[INFO] Found $BN" 1>&2;
     fi
@@ -33,6 +33,8 @@ ed "$ENWIKI"
 ed "$NOWIKI"
 ed "$NNWIKI"
 
+YM="$(date +%Y-%m)"
+
 echo >&2 "[INFO] Extracting domains. This may take a LONG time."
 find . -name '*.list.tmp' -exec cat {} \; | sed -e 's/.html.no/.html/g' | cat - "$DOMAINS" 2>/dev/null | "$MCN_TOOLS/default_extract" > "_tmp.list"
-mv "_tmp.list" "$DOMAINS"
+mv "_tmp.list" "$YM-$DOMAINS"
