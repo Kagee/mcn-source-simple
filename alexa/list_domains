@@ -10,16 +10,22 @@ command -v 7z >/dev/null 2>&1 || \
       echo >&2 "[ERROR] Please run 'sudo apt install p7zip-full'";
       exit 1; }
 
+
+TIMESTAMP="$(date +%F%T | tr ':' '-')"
+
 # Timestamping is turned off on the server, so we can't use it for wget
 # Download if missing or --update-source
+
+LIST="$TIMESTAMP-$DOMAINS"
+
 wget -N "http://s3.amazonaws.com/alexa-static/top-1m.csv.zip" 2>&1 # | grep "not retrieving" 1>&2
-if [ ! -e "$DOMAINS" ] || [ "x$1" = "x--update-list" ]; then
+if [ ! -e "$LIST" ] || [ "x$1" = "x--update-list" ]; then
   # We did not find "not retrieving" or we were forced to update the list
   7z x -y top-1m.csv.zip
-  cat top-1m.csv | "$MCN_TOOLS/default_extract" > "$SOURCE_DIR/_tmp.list"
-  cat top-1m.csv | sed -e 's/\.com\.no/\.no/' -e 's/\.co\.no/\.no/' | "$MCN_TOOLS/default_extract" >> "$SOURCE_DIR/_tmp.list"
+  cat top-1m.csv | "$MCN_TOOLS/default_extract" > "$SOURCE_DIR/_list.tmp"
+  cat top-1m.csv | sed -e 's/\.com\.no/\.no/' -e 's/\.co\.no/\.no/' | "$MCN_TOOLS/default_extract" >> "$SOURCE_DIR/_list.tmp"
   # cat top-1m.csv | sed -e 's/\.[^.]*$/\.no/' | "${MCN_TOOLS}/default_extract" >> ./tmp.list
-  cat "$SOURCE_DIR/_tmp.list" "$DOMAINS" | sort | uniq > "$SOURCE_DIR/_tmp2.list"
-  mv "$SOURCE_DIR/_tmp2.list" "$DOMAINS"
-  rm -f "$SOURCE_DIR/_tmp.list" "$SOURCE_DIR/_tmp2.list"
+  cat "$SOURCE_DIR/_list.tmp" *.list | sort | uniq > "$SOURCE_DIR/_list2.tmp"
+  mv "$SOURCE_DIR/_list2.tmp" "$LIST"
+  rm -f "$SOURCE_DIR/_list.tmp" "$SOURCE_DIR/_list2.tmp"
 fi
