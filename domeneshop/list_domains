@@ -6,12 +6,14 @@ SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SOURCE_DIR" || exit
 source config.sh
 
-TIMESTAMP="$(date +%F%T | tr ':' '-')"
+YMD="$(date +%F)"
 
 if [ -d "$PWD/$STORAGE" ];  then
   find "$PWD/$STORAGE" -type f -name '*.html' -exec cat {} \; | \
   cat - "$DOMAINS" 2>/dev/null | \
   "$MCN_TOOLS/default_extract" > ./tmp.list
-  cat ./*"$DOMAINS" ./tmp.list | sort | uniq > "$TIMESTAMP-$DOMAINS"
+  mv output/* old/
+  cat ./*"$DOMAINS" ./tmp.list | sort | uniq > "$YMD-$DOMAINS"
+  mv "$YMD-$DOMAINS" "output/$YMD-$DOMAINS"
   rm -f ./tmp.list
 fi
