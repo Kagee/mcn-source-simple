@@ -11,12 +11,12 @@ command -v 7z >/dev/null 2>&1 || \
       exit 1; }
 
 
-TIMESTAMP="$(date +%F%T | tr ':' '-')"
+YMD="$(date +%F)"
 
 # Timestamping is turned off on the server, so we can't use it for wget
 # Download if missing or --update-source
 
-LIST="$TIMESTAMP-$DOMAINS"
+LIST="${YMD}-${DOMAINS}"
 
 wget -N "http://s3.amazonaws.com/alexa-static/top-1m.csv.zip" 2>&1 # | grep "not retrieving" 1>&2
 if [ ! -e "$LIST" ] || [ "x$1" = "x--update-list" ]; then
@@ -25,7 +25,8 @@ if [ ! -e "$LIST" ] || [ "x$1" = "x--update-list" ]; then
   cat top-1m.csv | "$MCN_TOOLS/default_extract" > "$SOURCE_DIR/_list.tmp"
   cat top-1m.csv | sed -e 's/\.com\.no/\.no/' -e 's/\.co\.no/\.no/' | "$MCN_TOOLS/default_extract" >> "$SOURCE_DIR/_list.tmp"
   # cat top-1m.csv | sed -e 's/\.[^.]*$/\.no/' | "${MCN_TOOLS}/default_extract" >> ./tmp.list
-  cat "$SOURCE_DIR/_list.tmp" *.list | sort | uniq > "$SOURCE_DIR/_list2.tmp"
-  mv "$SOURCE_DIR/_list2.tmp" "$LIST"
-  rm -f "$SOURCE_DIR/_list.tmp" "$SOURCE_DIR/_list2.tmp"
+  mv output/* old/
+  cat "$SOURCE_DIR/_list.tmp" old/*.list | sort | uniq > "$SOURCE_DIR/_list2.tmp"
+  mv "$SOURCE_DIR/_list2.tmp" "output/$LIST"
+  rm -f "$SOURCE_DIR/_list.tmp"
 fi
