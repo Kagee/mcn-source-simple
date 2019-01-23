@@ -2,10 +2,12 @@
 SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SOURCE_DIR"
 source config.sh
+NONASCII="$(cat "$MCN_TOOLS/regexp_dotno" | grep '#\*' | tr -d '[[:alnum:]]#* \n')"
 set -Eeuo pipefail
 trap "echo '[ERROR] Permutation failed!' 1>&2; rm _tmp.list" ERR
 if [ ! -e "$DOMAINS" ]; then
-    ./perm.py 2 "$MCN_TOOLS" | "$MCN_TOOLS/default_extract" > "_tmp.list"
-    ./perm.py 3 "$MCN_TOOLS" | "$MCN_TOOLS/default_extract" >> "_tmp.list"
-    mv "_tmp.list" "$DOMAINS"
+    ./perm.py 2 "$NONASCII" | "$MCN_TOOLS/default_extract" > "_tmp.list"
+    ./perm.py 3 "$NONASCII" | "$MCN_TOOLS/default_extract" >> "_tmp.list"
+    LC_ALL=C sort "_tmp.list" > "output/$DOMAINS"
+    rm "_tmp.list"
 fi
