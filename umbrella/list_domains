@@ -1,0 +1,55 @@
+#! /usr/bin/env bash
+# Info: http://data.norge.no/data/registerenheten-i-br%C3%B8nn%C3%B8ysund/enhetsregisteret
+# Download: http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
+SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SOURCE_DIR"
+source config.sh
+
+set -e
+
+URL_PRE="http://s3-us-west-1.amazonaws.com/umbrella-static/top-1m-"
+URL_POST=".csv.zip"
+
+START_AT="2017-01-19"
+END_AT="$(date +%F -d "-2 day")"
+#END_AT="$(date +%F -d "-695 day")"
+
+YMD="$(date +%F)"
+
+LIST="${YMD}-${DOMAINS}"
+
+while [ "$START_AT" != "$END_AT" ]; do
+  echo "$START_AT"
+  START_AT="$(date +%F -d "$START_AT + 1 day")";
+done | shuf | while read START_AT; do
+  RESFILE="$STORAGE_FOLDER/${START_AT}.no.gz"
+  TMPFILE="$TMP_FOLDER/${START_AT}.csv.zip"
+  if [ ! -f "$RESFILE" ]; then
+    1>&2 echo -e "\n[INFO] Missing $RESFILE"
+    if [ ! -f "$TMPFILE" ]; then
+      URL="${URL_PRE}${START_AT}${URL_POST}"
+      1>&2 echo "[INFO] Downloading $TMPFILE from $URL"
+      wget -q -O "$TMPFILE" "${URL}"
+    fi
+    zcat "$TMPFILE" | "$MCN_TOOLS/default_extract" | gzip > "$TMP_FOLDER/tmp.no.gz"
+    mv "$TMP_FOLDER/tmp.no.gz" "$RESFILE"
+    rm "$TMPFILE"
+  else
+    1>&2 echo -n "."
+  fi
+done
+
+exit 1
+
+wget -N "http://s3.amazonaws.com/alexa-static/top-1m.csv.zip" 2>&1 # | grep "not retrieving" 1>&2
+if [ ! -e "$LIST" ] || [ "x$1" = "x--update-list" ]; then
+  # We did not find "not retrieving" or we were forced to update the list
+  7z x -y top-1m.csv.zip
+  cat top-1m.csv | "$MCN_TOOLS/default_extract" > "$SOURCE_DIR/_list.tmp"
+  cat top-1m.csv | sed -e 's/\.com\.no/\.no/' -e 's/\.co\.no/\.no/' | "$MCN_TOOLS/default_extract" >> "$SOURCE_DIR/_list.tmp"
+  # cat top-1m.csv | sed -e 's/\.[^.]*$/\.no/' | "${MCN_TOOLS}/default_extract" >> ./tmp.list
+  mv output/* old/
+  cat "$SOURCE_DIR/_list.tmp" old/*.list | sort | uniq > "$SOURCE_DIR/_list2.tmp"
+  mv "$SOURCE_DIR/_list2.tmp" "output/$LIST"
+  rm -f "$SOURCE_DIR/_list.tmp"
+fi
