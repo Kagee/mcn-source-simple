@@ -1,0 +1,1 @@
+Credit: This result contains data from the norwegian Central Coordinating Register for Legal Entities. The data may be found here https://data.norge.no/data/registerenheten-i-br%C3%B8nn%C3%B8ysund/enhetsregisteret
