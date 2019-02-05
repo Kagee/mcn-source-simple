@@ -1,0 +1,1 @@
+Credit: This result contains data from the Norwegian Labour Inspection Authority. The data may be found here https://data.norge.no/data/arbeidstilsynet/bedriftshelsetjenester-godkjent-av-arbeidstilsynet

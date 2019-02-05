@@ -4,11 +4,11 @@
 SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SOURCE_DIR"
 source config.sh # MCN_TOOLS, DOMAINS
-
+URL="https://www.arbeidstilsynet.no/opendata/bht.xml"
 INPUT="bedriftshelsetjeneste.xml" # Updates daily: -mtime 1
 if [ ! -e "$INPUT" ] || [ "x$1" = "x--update-src" ] || find "$INPUT" ! -mtime -1 | egrep '.*' >/dev/null; then
     echo "INFO: $INPUT was not found or older than X, downloading from arbeidstilsynet.no" 1>&2
-    wget -O "$INPUT" "http://www.arbeidstilsynet.no/opendata/bedriftshelsetjeneste.xml"
+    wget -O "$INPUT" "$URL"
 else
     echo "INFO: $INPUT found. Use '$0 --update-src' to redownload." 1>&2
 fi
