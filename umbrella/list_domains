@@ -39,17 +39,12 @@ done | shuf | while read START_AT; do
   fi
 done
 
-exit 1
-
-wget -N "http://s3.amazonaws.com/alexa-static/top-1m.csv.zip" 2>&1 # | grep "not retrieving" 1>&2
-if [ ! -e "$LIST" ] || [ "x$1" = "x--update-list" ]; then
-  # We did not find "not retrieving" or we were forced to update the list
-  7z x -y top-1m.csv.zip
-  cat top-1m.csv | "$MCN_TOOLS/default_extract" > "$SOURCE_DIR/_list.tmp"
-  cat top-1m.csv | sed -e 's/\.com\.no/\.no/' -e 's/\.co\.no/\.no/' | "$MCN_TOOLS/default_extract" >> "$SOURCE_DIR/_list.tmp"
-  # cat top-1m.csv | sed -e 's/\.[^.]*$/\.no/' | "${MCN_TOOLS}/default_extract" >> ./tmp.list
-  mv output/* old/
-  cat "$SOURCE_DIR/_list.tmp" old/*.list | sort | uniq > "$SOURCE_DIR/_list2.tmp"
-  mv "$SOURCE_DIR/_list2.tmp" "output/$LIST"
-  rm -f "$SOURCE_DIR/_list.tmp"
+if [ -d "$STORAGE_FOLDER" ];  then
+  find "$PWD/$STORAGE" -type f -name '*.no.gz' -exec zcat {} \; | \
+  cat - old/* 2>/dev/null | \
+  "$MCN_TOOLS/default_extract" > ./tmp.list
+  mv output/* old/ 2>/dev/null || true
+  sort ./tmp.list | uniq > "$YMD-$DOMAINS"
+  mv "$YMD-$DOMAINS" "output/$YMD-$DOMAINS"
+  rm -f ./tmp.list
 fi
